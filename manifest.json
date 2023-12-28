@@ -8,6 +8,7 @@
     "default_icon": "hello_extensions.png"
   },
   "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://localhost:8080/"],
   "content_scripts": [
     {
       "matches": ["https://www.zillow.com/*"], 
