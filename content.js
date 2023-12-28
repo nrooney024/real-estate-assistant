@@ -8,5 +8,15 @@ for (const element of contentElements) {
 console.log("BELOW IS WHAT I'M LOOKING FOR!!!!!");
 console.log(content);
 
-// Send content to background script
-chrome.runtime.sendMessage({ action: "sendPageContent", content: content });
+
+// Send content to your server
+fetch('http://localhost:8080/receive-data', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ content: content })
+})
+.then(response => response.text())
+.then(data => console.log(data))
+.catch((error) => console.error('Error:', error));
