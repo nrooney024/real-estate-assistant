@@ -88,6 +88,81 @@ public class SimpleServer {
 
                         // Print the response to the console
                         System.out.println("GET Response: " + result.toString());
+
+                        // Extract the latitude coordinates from the GET response
+                        int latStartIndex = result.indexOf("\"lat\":") + 6;
+                        int latEndIndex = result.indexOf(",", latStartIndex);
+                        String latString = result.substring(latStartIndex, latEndIndex);
+                        latString = latString.replace("\"", ""); // Remove quotation marks
+                        System.out.println("Latitude String: " + latString);
+
+                        double lat = 0.0;
+                        try {
+                            lat = Double.parseDouble(latString);
+                            System.out.println("Latitude: " + lat);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error parsing latitude string to double:");
+                            e.printStackTrace();
+                        }
+
+                        // Extract the longitude coordinates from the GET response
+                        int lonStartIndex = result.indexOf("\"lon\":") + 6;
+                        int lonEndIndex = result.indexOf(",", lonStartIndex);
+                        String lonString = result.substring(lonStartIndex, lonEndIndex);
+                        int commaIndex = lonString.indexOf(",");
+                        if (commaIndex != -1) {
+                            lonString = lonString.substring(0, commaIndex);
+                        }
+                        lonString = lonString.replace("\"", ""); // Remove quotation marks
+                        System.out.println("Longitude String: " + lonString);
+
+                        double lon = 0.0;
+                        try {
+                            lon = Double.parseDouble(lonString);
+                            System.out.println("Longitude: " + lon);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error parsing longitude string to double:");
+                            e.printStackTrace();
+                        }
+                        
+                        // Create the POST request body
+                        String postBody = "[out:json];\n" +
+                                "(\n" +
+                                "  node[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
+                                "  way[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
+                                "  relation[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
+                                ");\n" +
+                                "out center;";
+
+
+                        // Print the POST request body to the console
+                        System.out.println("POST Request Body: " + postBody);
+
+                        // Create a new URL object for the POST request
+                        URI postUri = new URI("https://overpass-api.de/api/interpreter");
+                        HttpURLConnection postConnection = (HttpURLConnection) postUri.toURL().openConnection();
+                        postConnection.setRequestMethod("POST");
+                        postConnection.setRequestProperty("Content-Type", "text/plain");
+                        postConnection.setDoOutput(true);
+
+                        // Write the POST request body to the connection
+                        OutputStream postOutputStream = postConnection.getOutputStream();
+                        postOutputStream.write(postBody.getBytes());
+                        postOutputStream.flush();
+                        postOutputStream.close();
+
+                        // Read the response from the POST request
+                        BufferedReader postReader = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
+                        StringBuilder postResult = new StringBuilder();
+                        String postLine;
+                        while ((postLine = postReader.readLine()) != null) {
+                            postResult.append(postLine);
+                        }
+                        postReader.close();
+
+                        // Print the response to the console
+                        System.out.println("POST Response: " + postResult.toString());
+
                     } catch (URISyntaxException e) {
                         System.out.println("Invalid URL");
                         e.printStackTrace();
