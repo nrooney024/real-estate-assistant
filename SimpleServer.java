@@ -3,6 +3,7 @@ import com.sun.net.httpserver.*;
 import java.io.*;
 // For the GET request
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 // Define the main class
 public class SimpleServer {
@@ -163,10 +164,44 @@ public class SimpleServer {
                         // Print the response to the console
                         System.out.println("POST Response: " + postResult.toString());
 
+                        // Define a new context for the server
+                        server.createContext("/get-supermarkets", new HttpHandler() {
+                        // Define the handle method for incoming requests
+                        @Override
+                        public void handle(HttpExchange exchange) throws IOException {
+                            // Check if the request method is GET
+                            if ("GET".equals(exchange.getRequestMethod())) {
+                                // Set the CORS headers for the request
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+                                // Define the response string
+                                String response = postResult.toString();
+
+                                // Calculate the length of the response string in bytes, not characters
+                                int contentLength = response.getBytes(StandardCharsets.UTF_8).length;
+
+                                // Send the response headers
+                                exchange.sendResponseHeaders(200, contentLength);
+                                // Get the response body as an OutputStream
+                                OutputStream os = exchange.getResponseBody();
+                                // Write the response string to the OutputStream
+                                os.write(response.getBytes());
+                                // Close the OutputStream
+                                os.close();
+                            } else {
+                                // If the request method is not GET, send a 405 Method Not Allowed response
+                                exchange.sendResponseHeaders(405, -1);
+                            }
+                        }
+                        });
+
                     } catch (URISyntaxException e) {
                         System.out.println("Invalid URL");
                         e.printStackTrace();
                     }
+
                 } else {
                     // If the request method is not OPTIONS or POST, send a 405 Method Not Allowed response
                     exchange.sendResponseHeaders(405, -1);
