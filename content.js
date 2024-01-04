@@ -5,11 +5,10 @@ for (const element of contentElements) {
   content.push(element.textContent);
 }
 
-console.log("BELOW IS WHAT I'M LOOKING FOR!!!!!");
-console.log(content);
+console.log("Server: " + content);
 
 
-// Send content to your server
+// Send adddress to server
 fetch('http://localhost:8080/receive-data', {
     method: 'POST',
     headers: {
@@ -20,3 +19,16 @@ fetch('http://localhost:8080/receive-data', {
 .then(response => response.text())
 .then(data => console.log(data))
 .catch((error) => console.error('Error:', error));
+
+
+
+// Request supermarket data from server
+fetch('http://localhost:8080/get-supermarkets')
+  .then(response => response.json())
+  .then(data => {
+    console.log("Successfully received /get-supermarket response!");
+    console.log(data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+});
