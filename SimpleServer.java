@@ -167,65 +167,6 @@ public class SimpleServer {
                         // Print the response to the console
                         System.out.println("POST Response: " + postResult.toString());
 
-                        // Define a new context for the server
-                        // TODO: Pull this handler out of this scope.
-                        server.createContext("/get-supermarkets", new HttpHandler() {
-
-
-                        // Define the handle method for incoming requests
-                        @Override
-                        
-                        public void handle(HttpExchange exchange) throws IOException {
-                            
-                            System.out.println("GET Checkpoint 1");
-
-                            // Check if the request method is OPTIONS
-                            if ("OPTIONS".equals(exchange.getRequestMethod())) {
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
-                                exchange.sendResponseHeaders(204, -1);
-                                return;
-                            }
-                            
-                            System.out.println("GET Checkpoint 2");
-
-                            // Check if the request method is GET
-                            if ("GET".equals(exchange.getRequestMethod())) {
-                                // Set the CORS headers for the request
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
-                                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
-
-                                System.out.println("GET Checkpoint 3");
-
-                                // Define the response string
-                                String response = postResult.toString();
-
-                                // Calculate the length of the response string in bytes, not characters
-                                int contentLength = response.getBytes(StandardCharsets.UTF_8).length;
-
-                                System.out.println("Response Length Chkpnt 1: " + contentLength);
-
-                                // Send the response headers
-                                exchange.sendResponseHeaders(200, contentLength);
-                                // Get the response body as an OutputStream
-                                OutputStream os = exchange.getResponseBody();
-                                // Write the response string to the OutputStream
-
-                                System.out.println("Response Length Chkpnt 2: " + response.length());
-
-                                os.write(response.getBytes());
-                                // Close the OutputStream
-                                os.close();
-                            } else {
-                                // If the request method is not GET, send a 405 Method Not Allowed response
-                                exchange.sendResponseHeaders(405, -1);
-                            
-                            }
-                        }
-                        });
-
                     } catch (URISyntaxException e) {
                         System.out.println("Invalid URL");
                         e.printStackTrace();
@@ -236,6 +177,65 @@ public class SimpleServer {
                     exchange.sendResponseHeaders(405, -1);
                 }
             }
+        });
+
+
+
+        // Define a new context for the server
+        // TODO: Pull this handler out of this scope.
+        server.createContext("/get-supermarkets", new HttpHandler() {
+
+        // Define the handle method for incoming requests
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            
+            System.out.println("GET Checkpoint 1");
+
+            // Check if the request method is OPTIONS
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
+            
+            System.out.println("GET Checkpoint 2");
+
+            // Check if the request method is GET
+            if ("GET".equals(exchange.getRequestMethod())) {
+                // Set the CORS headers for the request
+                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
+                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+                System.out.println("GET Checkpoint 3");
+
+                // Define the response string
+                String response = "stuff"; //postResult.toString();
+
+                // Calculate the length of the response string in bytes, not characters
+                int contentLength = response.getBytes(StandardCharsets.UTF_8).length;
+
+                System.out.println("Response Length Chkpnt 1: " + contentLength);
+
+                // Send the response headers
+                exchange.sendResponseHeaders(200, contentLength);
+                // Get the response body as an OutputStream
+                OutputStream os = exchange.getResponseBody();
+                // Write the response string to the OutputStream
+
+                System.out.println("Response Length Chkpnt 2: " + response.length());
+
+                os.write(response.getBytes());
+                // Close the OutputStream
+                os.close();
+            } else {
+                // If the request method is not GET, send a 405 Method Not Allowed response
+                exchange.sendResponseHeaders(405, -1);
+            
+            }
+        }
         });
 
         // Start the server
