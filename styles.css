@@ -1,0 +1,26 @@
+body {
+    background: linear-gradient(to bottom, #000080, #0000FF);
+    color: white;
+    padding: 2em;
+}
+
+a {
+    color: white;
+}
+
+a:hover {
+    color: lightblue;
+}
+
+ol {
+    padding-inline-start: .5em;
+}
+
+li {
+    font-family: 'Source Code Pro', monospace;
+}
+
+h1 {
+    font-family: 'Rubik Doodle Shadow', cursive;
+}
+

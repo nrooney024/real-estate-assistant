@@ -18,6 +18,7 @@ public class SimpleServer {
 
         // Define a new context for the server
         server.createContext("/receive-data", new HttpHandler() {
+
             // Define the handle method for incoming requests
             @Override
             public void handle(HttpExchange exchange) throws IOException {
@@ -56,18 +57,36 @@ public class SimpleServer {
                     // Define the response string
                     String response = "Echo: " + query;
 
+                    // Calculate the length of the response string in bytes, not characters
+                    int responseLength = response.getBytes(StandardCharsets.UTF_8).length;
+
+                    System.out.println("Response Length Chkpnt 1: " + responseLength);
+
                     // Send the response headers
-                    exchange.sendResponseHeaders(200, response.length());
+                    exchange.sendResponseHeaders(200, responseLength);
+
                     // Get the response body as an OutputStream
                     OutputStream os = exchange.getResponseBody();
+
+                    System.out.println("Response Length Chkpnt 2: " + responseLength);
+                    
                     // Write the response string to the OutputStream
                     os.write(response.getBytes());
+                    
                     // Close the OutputStream
                     os.close();
 
+
+                    // Pulling API_KEY from .env file
+                    String apiKey = System.getenv("API_KEY");
+                    if (apiKey == null) {
+                        System.err.println("API key not found in environment variables");
+                        System.exit(1);
+                    }
+
                     // Send GET request to convert address to coordinates
                     // String address = query; // Replace with the actual address from the POST request
-                    String urlString = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodedString;
+                    String urlString = "https://api.opencagedata.com/geocode/v1/json?q=" + encodedString + "&key=" + apiKey;
 
                     // Print "This is the URL: " + urlString to the console
                     System.out.println("This is the URL: " + urlString);
@@ -91,47 +110,31 @@ public class SimpleServer {
                         System.out.println("GET Response: " + result.toString());
 
                         // Extract the latitude coordinates from the GET response
-                        int latStartIndex = result.indexOf("\"lat\":") + 6;
-                        int latEndIndex = result.indexOf(",", latStartIndex);
-                        String latString = result.substring(latStartIndex, latEndIndex);
-                        latString = latString.replace("\"", ""); // Remove quotation marks
-                        System.out.println("Latitude String: " + latString);
+                        String jsonResponse = result.toString();
 
-                        double lat = 0.0;
-                        try {
-                            lat = Double.parseDouble(latString);
-                            System.out.println("Latitude: " + lat);
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error parsing latitude string to double:");
-                            e.printStackTrace();
-                        }
+                        // Extract the relevant portion of the string
+                        String resultsSection = jsonResponse.substring(jsonResponse.indexOf("\"results\":"));
 
-                        // Extract the longitude coordinates from the GET response
-                        int lonStartIndex = result.indexOf("\"lon\":") + 6;
-                        int lonEndIndex = result.indexOf(",", lonStartIndex);
-                        String lonString = result.substring(lonStartIndex, lonEndIndex);
-                        int commaIndex = lonString.indexOf(",");
-                        if (commaIndex != -1) {
-                            lonString = lonString.substring(0, commaIndex);
-                        }
-                        lonString = lonString.replace("\"", ""); // Remove quotation marks
-                        System.out.println("Longitude String: " + lonString);
+                        // Find the geometry section
+                        String geometrySection = resultsSection.substring(resultsSection.indexOf("\"geometry\":"));
 
-                        double lon = 0.0;
-                        try {
-                            lon = Double.parseDouble(lonString);
-                            System.out.println("Longitude: " + lon);
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error parsing longitude string to double:");
-                            e.printStackTrace();
-                        }
+                        // Find the lat and lng values
+                        String latStr = geometrySection.substring(geometrySection.indexOf("\"lat\":") + 6, geometrySection.indexOf(","));
+                        String lngStr = geometrySection.substring(geometrySection.indexOf("\"lng\":") + 6, geometrySection.indexOf("}"));
+
+                        // Convert string to double
+                        double latitude = Double.parseDouble(latStr);
+                        double longitude = Double.parseDouble(lngStr);
+
+                        // Print out the latitude and longitude
+                        System.out.println("Latitude: " + latitude + ", Longitude: " + longitude);
                         
                         // Create the POST request body
                         String postBody = "[out:json];\n" +
                                 "(\n" +
-                                "  node[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
-                                "  way[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
-                                "  relation[\"shop\"=\"supermarket\"](around:5000," + lat + "," + lon + ");\n" +
+                                "  node[\"shop\"=\"supermarket\"](around:5000," + latitude + "," + longitude + ");\n" +
+                                "  way[\"shop\"=\"supermarket\"](around:5000," + latitude + "," + longitude + ");\n" +
+                                "  relation[\"shop\"=\"supermarket\"](around:5000," + latitude + "," + longitude + ");\n" +
                                 ");\n" +
                                 "out center;";
 
@@ -165,10 +168,28 @@ public class SimpleServer {
                         System.out.println("POST Response: " + postResult.toString());
 
                         // Define a new context for the server
+                        // TODO: Pull this handler out of this scope.
                         server.createContext("/get-supermarkets", new HttpHandler() {
+
+
                         // Define the handle method for incoming requests
                         @Override
+                        
                         public void handle(HttpExchange exchange) throws IOException {
+                            
+                            System.out.println("GET Checkpoint 1");
+
+                            // Check if the request method is OPTIONS
+                            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
+                                exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+                                exchange.sendResponseHeaders(204, -1);
+                                return;
+                            }
+                            
+                            System.out.println("GET Checkpoint 2");
+
                             // Check if the request method is GET
                             if ("GET".equals(exchange.getRequestMethod())) {
                                 // Set the CORS headers for the request
@@ -176,23 +197,31 @@ public class SimpleServer {
                                 exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET");
                                 exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
+                                System.out.println("GET Checkpoint 3");
+
                                 // Define the response string
                                 String response = postResult.toString();
 
                                 // Calculate the length of the response string in bytes, not characters
                                 int contentLength = response.getBytes(StandardCharsets.UTF_8).length;
 
+                                System.out.println("Response Length Chkpnt 1: " + contentLength);
+
                                 // Send the response headers
                                 exchange.sendResponseHeaders(200, contentLength);
                                 // Get the response body as an OutputStream
                                 OutputStream os = exchange.getResponseBody();
                                 // Write the response string to the OutputStream
+
+                                System.out.println("Response Length Chkpnt 2: " + response.length());
+
                                 os.write(response.getBytes());
                                 // Close the OutputStream
                                 os.close();
                             } else {
                                 // If the request method is not GET, send a 405 Method Not Allowed response
                                 exchange.sendResponseHeaders(405, -1);
+                            
                             }
                         }
                         });
