@@ -7,7 +7,7 @@
     "default_popup": "hello.html",
     "default_icon": "real-estate-assistant-logo.png"
   },
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage", "webNavigation"],
   "host_permissions": ["http://localhost:8080/"],
   "content_scripts": [
     {
