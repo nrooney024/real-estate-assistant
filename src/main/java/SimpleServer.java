@@ -410,7 +410,7 @@ public class SimpleServer {
             // exchange.sendResponseHeaders(405, -1);
             e.printStackTrace();
         }
-    };
+    };  
 
     // Method for finding the distance between two sets of coordinates
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
