@@ -8,8 +8,8 @@ import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import org.json.*; // Importing the JSON handling library
-import java.util.Arrays; // Importing Arrays utility class for sorting
+import org.json.*; 
+import java.util.Arrays; 
 
 
 
@@ -45,15 +45,12 @@ public class SimpleServer {
 
     private static void handler(HttpExchange exchange) {
 
-        
-
         // Initialize a JSON object to store the response
         StringBuilder jsonBuilder = new StringBuilder();
         jsonBuilder.append("{");
     
-        
-        // CONVERTING /FETCH-ADDRESS-DATA RESPONSE INTO READABLE FORMAT ------------------------------------------------------
 
+        // CONVERTING /FETCH-ADDRESS-DATA RESPONSE INTO READABLE FORMAT 
 
         // Get the InputStream from the exchange
         InputStream is = exchange.getRequestBody();
@@ -70,7 +67,7 @@ public class SimpleServer {
                 bodyBuilder.append(lineOfBody);
             }
         } catch (IOException e) {
-            e.printStackTrace(); // For now, just print the stack trace to the console
+            e.printStackTrace(); 
         }
 
             
@@ -85,9 +82,7 @@ public class SimpleServer {
             jsonBuilder.append("\"received-address\": ").append("\"Error reading /fetch-address-data request body\"").append(",");
         }
 
-        // EXTRACTING ADDRESS FROM /FETCH-ADDRESS-DATA RESPONSE AND CONVERTING TO UTF-8 ------------------------------------------------------
-
-        // Extract the string from the query
+        // EXTRACTING ADDRESS FROM /FETCH-ADDRESS-DATA RESPONSE AND CONVERTING TO UTF-8
         String extractedString = body.substring(body.indexOf("[") + 2, body.lastIndexOf("\""));
         System.out.println("\nExtracted String: " + extractedString);
         // Encode the string
@@ -96,33 +91,33 @@ public class SimpleServer {
             encodedString = URLEncoder.encode(extractedString, "UTF-8");
             System.out.println("\nEncoded String: " + encodedString);
         } catch (UnsupportedEncodingException e) {
-            // Handle the exception, maybe log it, and/or rethrow as a RuntimeException
             e.printStackTrace();
             encodedString = "";
         }
         
-        
-        
-        
-        // SENDING ADDRESS TO OPENCAGE TO GET LATITUDE AND LONGITUDE ------------------------------------------------------
 
-        // Assuming you've extracted the address and have it in `encodedString`
+        // Sending address to OpenCage in return for latitude and longitude coordinates.
+
+        // Pulling OpenCage API key
         String opencageApiKey = System.getenv("API_KEY");
         if (opencageApiKey == null) {
             System.err.println("API key not found in environment variables");
             System.exit(1);
         }
 
+        // Using OpenCageGeocoder class to get latitude and longitude coordinates of the address.
         OpenCageGeocoder geocoder = new OpenCageGeocoder(opencageApiKey);
         double[] coordinates = geocoder.getCoordinates(encodedString); // Fetch coordinates
 
-        // If coordinates are valid, append them to jsonBuilder and proceed
+        // Check if OpenCage successfully pulled both coordinates
         if (coordinates != null && coordinates.length == 2) {
+            
+            // Add the coordinates to the JSON builder
             double latitude = coordinates[0];
             double longitude = coordinates[1];
             geocoder.appendCoordinatesToJson(latitude, longitude, jsonBuilder);
             
-            // Asking overpass for closest supermarkets
+            // Asking OverPass for closest supermarkets
             OverPass myOverPassCallSupermarkets = new OverPass(exchange,jsonBuilder,"shop","supermarket",latitude,longitude);
             myOverPassCallSupermarkets.postRequest();
             myOverPassCallSupermarkets.readPostResponse();
@@ -130,8 +125,7 @@ public class SimpleServer {
             myOverPassCallSupermarkets.extractClosestEstablishments();
             myOverPassCallSupermarkets.convertToJson();
 
-        
-            // Asking overpass for closest gyms
+            // Asking OverPass for closest gyms
             OverPass myOverPassCallGyms = new OverPass(exchange,jsonBuilder,"leisure","fitness_centre",latitude,longitude);
             myOverPassCallGyms.postRequest();
             myOverPassCallGyms.readPostResponse();
@@ -139,7 +133,7 @@ public class SimpleServer {
             myOverPassCallGyms.extractClosestEstablishments();
             myOverPassCallGyms.convertToJson();
             
-            // Asking overpass for closest cafes
+            // Asking OverPass for closest cafes
             OverPass myOverPassCallCafes = new OverPass(exchange,jsonBuilder,"amenity","cafe",latitude,longitude);
             myOverPassCallCafes.postRequest();
             myOverPassCallCafes.readPostResponse();
@@ -147,8 +141,7 @@ public class SimpleServer {
             myOverPassCallCafes.extractClosestEstablishments();
             myOverPassCallCafes.convertToJson();
 
-
-            // Asking overpass for closest schools
+            // Asking OverPass for closest schools
             OverPass myOverPassCallSchools = new OverPass(exchange,jsonBuilder,"amenity","school",latitude,longitude);
             myOverPassCallSchools.postRequest();
             myOverPassCallSchools.readPostResponse();
@@ -156,7 +149,7 @@ public class SimpleServer {
             myOverPassCallSchools.extractClosestEstablishments();
             myOverPassCallSchools.convertToJson();
 
-            // Asking overpass for closest parks
+            // Asking OverPass for closest parks
             OverPass myOverPassCallParks = new OverPass(exchange,jsonBuilder,"leisure","park",latitude,longitude);
             myOverPassCallParks.postRequest();
             myOverPassCallParks.readPostResponse();
@@ -164,7 +157,7 @@ public class SimpleServer {
             myOverPassCallParks.extractClosestEstablishments();
             myOverPassCallParks.convertToJson();
 
-            // Asking overpass for closest banks
+            // Asking OverPass for closest banks
             OverPass myOverPassCallBanks = new OverPass(exchange,jsonBuilder,"amenity","bank",latitude,longitude);
             myOverPassCallBanks.postRequest();
             myOverPassCallBanks.readPostResponse();
@@ -172,6 +165,7 @@ public class SimpleServer {
             myOverPassCallBanks.extractClosestEstablishments();
             myOverPassCallBanks.convertToJson();
             myOverPassCallBanks.response();
+
         }else {
             // Handle the case where coordinates couldn't be fetched
             System.err.println("Failed to fetch coordinates for address: " + encodedString);

@@ -18,8 +18,10 @@ public class OpenCageGeocoder {
 
     // Method to fetch coordinates from OpenCage API
     public double[] getCoordinates(String address) {
-        double[] coordinates = new double[2]; // Default to an array of size 2 for lat, lng
+        double[] coordinates = new double[2]; // Default to an array of size 2 for latitude, longitude
         try {
+            
+            // Sending GET request to OpenCage
             String encodedAddress = java.net.URLEncoder.encode(address, "UTF-8");
             String requestUrl = "https://api.opencagedata.com/geocode/v1/json?q=" + encodedAddress + "&key=" + this.apiKey;
 
@@ -35,6 +37,7 @@ public class OpenCageGeocoder {
                 }
             }
 
+            // Collecting response from OpenCage GET request
             JSONObject jsonResponse = new JSONObject(response.toString());
             if(jsonResponse.getJSONArray("results").length() > 0) {
                 JSONObject results = jsonResponse.getJSONArray("results").getJSONObject(0);
@@ -53,7 +56,7 @@ public class OpenCageGeocoder {
         return coordinates;
     }
 
-    // Method to append coordinates to a StringBuilder (jsonBuilder)
+    // Method to append coordinates to jsonBuilder
     public void appendCoordinatesToJson(double latitude, double longitude, StringBuilder jsonBuilder) {
         // Check for valid coordinates before appending
         if(!Double.isNaN(latitude) && !Double.isNaN(longitude)) {

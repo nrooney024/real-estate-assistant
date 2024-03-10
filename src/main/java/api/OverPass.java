@@ -17,12 +17,9 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 
-
  // Class for managing Overpass connection
-
  public class OverPass {
 
-    // Properties
     private String overpassPostBody;
     private String searchTermType;
     private StringBuilder overpassResponse;
@@ -35,9 +32,7 @@ import java.util.Arrays;
     private HttpExchange exchange;
     private String searchTerm;
 
-    // Constructor
     public OverPass(HttpExchange exchange, StringBuilder jsonBuilder, String searchTermType, String searchTerm, Double latitude, Double longitude) {
-        // Initialize your properties here if necessary
         this.searchTermType = searchTermType;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -46,8 +41,7 @@ import java.util.Arrays;
         this.searchTerm = searchTerm;
     }
 
-
-
+    // Each location being pulled from OverPass will be considered an "establishment"
     static class Establishment implements Comparable<Establishment> {
         String name;
         double lat;
@@ -77,11 +71,11 @@ import java.util.Arrays;
     // Methods
 
     // This method sends a post request.
-    // You will need to add your specific implementation details.
     public void postRequest() {
         
         System.out.println("\nStarting postRequest...");
-        // Placeholder for post request implementation
+
+        // Initializing post request body
         overpassPostBody = "[out:json];\n" +
         "(\n" +
         "  node[\"" + searchTermType + "\"=\"" + searchTerm + "\"](around:5000," + latitude + "," + longitude + ");\n" +
@@ -90,7 +84,6 @@ import java.util.Arrays;
         ");\n" +
         "out center;";
 
-        // Print the POST request body to the console
         System.out.println("\nOverPass POST Request Body: " + overpassPostBody);
 
         URI overpassUri = null;
@@ -127,8 +120,9 @@ import java.util.Arrays;
 
 
     }
+
+
     // This method reads the post response.
-    // Add your specific code to process the response.
     public void readPostResponse() {
         
         System.out.println("\nStarting readPostResponse...");
@@ -145,13 +139,13 @@ import java.util.Arrays;
                 }
                 overpassReader.close();
                 
-                // Print the response to the console
                 System.out.println("OverPass POST Response: " + overpassResponse.toString());
 
             } catch (IOException e){
                 e.printStackTrace();
             }
             
+            // Appending the response to the jsonBuilder
             if (!overpassResponse.isEmpty()) {
                 jsonBuilder.append("\"overpass-response for" + searchTermType + ": "+ searchTerm + "\": ").append(overpassResponse.toString()).append(",");
             } else {
@@ -165,13 +159,13 @@ import java.util.Arrays;
 
 
     // This method sorts the extracted establishments by distance.
-    // Fill in with your sorting logic.
     public void sortByDistance() {
-        // Placeholder for sorting by distance implementation
-        JSONObject obj = new JSONObject(overpassResponse.toString()); // Parsing the JSON string into a JSON object
-        JSONArray elements = obj.getJSONArray("elements"); // Extracting the array of elements (supermarkets)
-
-        establishments = new Establishment[elements.length()]; // Creating an array to hold supermarket objects
+        // Parsing the JSON string into a JSON object
+        JSONObject obj = new JSONObject(overpassResponse.toString()); 
+        // Extracting the array of elements (supermarkets)
+        JSONArray elements = obj.getJSONArray("elements"); 
+        // Creating an array to hold supermarket objects
+        establishments = new Establishment[elements.length()]; 
 
         System.out.println("\nEstablishments loop starting...");
         System.out.println("\nElements length: " + elements.length());
@@ -179,32 +173,35 @@ import java.util.Arrays;
         // Looping through each element in the JSON array
         for (int i = 0; i < elements.length(); i++) {
             try {
-                JSONObject element = elements.getJSONObject(i); // Getting the individual supermarket JSON object
+                // Getting the individual supermarket JSON object
+                JSONObject element = elements.getJSONObject(i); 
                 
                 double lat;
                 double lon;
 
                 
                 if (element.has("lat") && element.has("lon")) {
-                    // Directly use lat and lon if present
-                    lat = element.getDouble("lat"); // Extracting the latitude
-                    lon = element.getDouble("lon"); // Extracting the longitude
+                    // Extracting the latitude and longitude
+                    lat = element.getDouble("lat"); 
+                    lon = element.getDouble("lon"); 
                 } else if (element.has("center")) {
                     // Check inside the center object if lat and lon are not directly present
                     JSONObject center = element.getJSONObject("center");
-                    lat = center.optDouble("lat", 0.0); // Default to 0.0 if lat is not present
-                    lon = center.optDouble("lon", 0.0); // Default to 0.0 if lon is not present
+                    // Default to 0.0 if lat is not present
+                    lat = center.optDouble("lat", 0.0); 
+                    // Default to 0.0 if lon is not present
+                    lon = center.optDouble("lon", 0.0); 
                 } else {
                     // Default to 0.0 if neither direct nor center lat/lon are present
                     lat = 0.0;
                     lon = 0.0;
                 }
-                
-                double distance = HaversineCalculator.haversine(latitude, longitude, lat, lon); // Calculating the distance from the input coordinates
-                // System.out.println("distance in loop: " + distance);
-                String name = element.getJSONObject("tags").optString("name", "Unknown"); // Extracting the name, defaulting to "Unknown" if not found
-                // System.out.println("name in loop: " + name);
-                establishments[i] = new Establishment(name, lat, lon, distance); // Creating a new Supermarket object and adding it to the array
+                // Calculating the distance from the input coordinates
+                double distance = HaversineCalculator.haversine(latitude, longitude, lat, lon); 
+                // Extracting the name, defaulting to "Unknown" if not found
+                String name = element.getJSONObject("tags").optString("name", "Unknown"); 
+                // Creating a new Supermarket object and adding it to the array
+                establishments[i] = new Establishment(name, lat, lon, distance); 
                 System.out.println("\ni is equal to: " + i);
                 System.out.println("\nestablishments[i] in loop: " + establishments[i]);
             } catch (Exception e) {
@@ -215,32 +212,15 @@ import java.util.Arrays;
             }
             
         }
-
-        // Print statements for the Establishments before the sort
-        // System.out.println("\n\nEstablishments: " + establishments);
-        // for (Establishment est : establishments) {
-        //     System.out.println(est);
-        // }
         
-
         Arrays.sort(establishments); // Sorting the supermarkets array based on the distance
-
-        // Print statements for the Establishments after the sort
-        // System.out.println("\n\nEstablishments after sort method: " + establishments);
-        // for (Establishment est : establishments) {
-        //     System.out.println(est);
-        // }
-        
 
     }
 
 
     // // This method extracts the closest establishments from the post response.
-    // // Implement your logic to extract and process the establishments.
     public void extractClosestEstablishments() {
-        // Placeholder for extracting closest establishments implementation
-        // Breaking out the closest supermarkets into their own array
-
+        
         // Initialize closestSupermarkets with the smaller of 3 or supermarkets.length
         closestEstablishments = new Establishment[Math.min(10, establishments.length)];
         System.out.println("\nClosest supermarket loop...");
@@ -254,26 +234,29 @@ import java.util.Arrays;
     }
 
 
-    // // This method converts the sorted establishments to JSON format.
-    // // Implement your JSON conversion logic here.
+    // This method converts the sorted establishments to JSON format.
     public void convertToJson() {
         System.out.println("\nconvertToJson is running..." );
-        // Placeholder for converting to JSON implementation
-        JSONArray closestEstablishmentsJSON = new JSONArray(); // Initialize a new JSONArray
-        // Loop through the closest supermarkets and add them to the JSONArray
-        
+        // Initialize a new JSONArray
+        JSONArray closestEstablishmentsJSON = new JSONArray(); 
         System.out.println("closestEstablishments within convertToJson: " + closestEstablishments);
+        // Loop through the closest establishments and add them to the JSONArray
         for (Establishment establishment : closestEstablishments) {
             System.out.println("\nAbout to start loop through closestEstablishments...");
             if (establishment != null) {
                 System.out.println("Establishment in loop: " + establishment);
-                JSONObject establishmentJSON = new JSONObject(); // Create a new JSONObject
-                establishmentJSON.put("name", establishment.name); // Add name
-                establishmentJSON.put("lat", establishment.lat); // Add latitude
-                establishmentJSON.put("lon", establishment.lon); // Add longitude
-                establishmentJSON.put("distance-km", establishment.distance); // Add distance
-
-                closestEstablishmentsJSON.put(establishmentJSON); // Add the supermarket JSONObject to the JSONArray
+                // Create a new JSONObject
+                JSONObject establishmentJSON = new JSONObject(); 
+                // Add name
+                establishmentJSON.put("name", establishment.name); 
+                // Add latitude
+                establishmentJSON.put("lat", establishment.lat); 
+                // Add longitude
+                establishmentJSON.put("lon", establishment.lon); 
+                // Add distance
+                establishmentJSON.put("distance-km", establishment.distance); 
+                // Add the supermarket JSONObject to the JSONArray
+                closestEstablishmentsJSON.put(establishmentJSON); 
             }
         }
 
@@ -288,6 +271,7 @@ import java.util.Arrays;
 
     }
 
+    // This method sends a response to the /FETCH-ADDRESS-DATA GET request
     public void response() {
         System.out.println("\nresponse starting...");
         // Finalizing JSON repsonse
@@ -302,7 +286,7 @@ import java.util.Arrays;
         // Create response headers
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         
-
+        // Send response headers
         try{
             byte[] responseBytes = jsonString.getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(200, responseBytes.length);
@@ -323,28 +307,4 @@ import java.util.Arrays;
         }
     }
 
-    // // Getters and Setters for the properties
-    // public String getOverpassPostBody() {
-    //     return overpassPostBody;
-    // }
-
-    // public void setOverpassPostBody(String overpassPostBody) {
-    //     this.overpassPostBody = overpassPostBody;
-    // }
-
-    // public String getSearchTerm() {
-    //     return searchTerm;
-    // }
-
-    // public void setSearchTerm(String searchTerm) {
-    //     this.searchTerm = searchTerm;
-    // }
-
-    // public String getPostResponse() {
-    //     return postResponse;
-    // }
-
-    // public void setPostResponse(String postResponse) {
-    //     this.postResponse = postResponse;
-    // }
 }

@@ -1,5 +1,6 @@
 package src.main.java.util;
 
+// This class calculates the distance between two sets of coordinates
 public class HaversineCalculator {
 
     // Radius of the earth in km
