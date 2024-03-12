@@ -1,5 +1,7 @@
 package src.main.java;
 
+import src.main.java.util.RequestParser;
+import src.main.java.util.AddressExtractor;
 import src.main.java.util.HaversineCalculator;
 import src.main.java.api.OverPass;
 import src.main.java.api.OpenCageGeocoder;
@@ -44,55 +46,28 @@ public class SimpleServer {
     }
 
     private static void handler(HttpExchange exchange) {
+        // Initializing jsonBuilder to be sent in response
+        StringBuilder jsonBuilder = new StringBuilder("{");
 
-        // Initialize a JSON object to store the response
-        StringBuilder jsonBuilder = new StringBuilder();
-        jsonBuilder.append("{");
+
+        // Extracting address from GET request
+
+        // Initializing encodedString
+        String encodedString = "";
+        try {
+            String body = RequestParser.parseBody(exchange.getRequestBody());
+            System.out.println("\nReceived: " + body);
     
-
-        // CONVERTING /FETCH-ADDRESS-DATA RESPONSE INTO READABLE FORMAT 
-
-        // Get the InputStream from the exchange
-        InputStream is = exchange.getRequestBody();
-    
-        // Use InputStreamReader and BufferedReader to read from the InputStream
-        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(isr);
-        // Use a StringBuilder to collect the lines
-        StringBuilder bodyBuilder = new StringBuilder();
-        String lineOfBody;
-        
-        try{
-            while ((lineOfBody = br.readLine()) != null) {
-                bodyBuilder.append(lineOfBody);
+            if (!body.isEmpty()) {
+                jsonBuilder.append("\"received-address\": ").append(body).append(",");
+                encodedString = AddressExtractor.extractAndEncode(body);
+                System.out.println("\nEncoded String: " + encodedString);
+                
+            } else {
+                jsonBuilder.append("\"received-address\": ").append("\"Error reading /fetch-address-data request body\"").append(",");
             }
         } catch (IOException e) {
-            e.printStackTrace(); 
-        }
-
-            
-        // Convert the StringBuilder to a String
-        String body = bodyBuilder.toString();
-        // Print the received data to the console
-        System.out.println("\nReceived: " + body);
-        // Updating responseJSON with a successful received-address-status response
-        if (!body.isEmpty()) {
-            jsonBuilder.append("\"received-address\": ").append(body).append(",");
-        }else{
-            jsonBuilder.append("\"received-address\": ").append("\"Error reading /fetch-address-data request body\"").append(",");
-        }
-
-        // EXTRACTING ADDRESS FROM /FETCH-ADDRESS-DATA RESPONSE AND CONVERTING TO UTF-8
-        String extractedString = body.substring(body.indexOf("[") + 2, body.lastIndexOf("\""));
-        System.out.println("\nExtracted String: " + extractedString);
-        // Encode the string
-        String encodedString;
-        try {
-            encodedString = URLEncoder.encode(extractedString, "UTF-8");
-            System.out.println("\nEncoded String: " + encodedString);
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            encodedString = "";
         }
         
 

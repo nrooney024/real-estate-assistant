@@ -1,6 +1,6 @@
 /Users/nickrooney/Github/real-estate-assistant/src/main/java/util/HaversineCalculator.java
 /Users/nickrooney/Github/real-estate-assistant/src/main/java/SimpleServer.java
 /Users/nickrooney/Github/real-estate-assistant/src/main/java/api/OverPass.java
-/Users/nickrooney/Github/real-estate-assistant/src/main/java/handlers/FetchAddressDataHandler.java
+/Users/nickrooney/Github/real-estate-assistant/src/main/java/util/AddressExtractor.java
+/Users/nickrooney/Github/real-estate-assistant/src/main/java/util/RequestParser.java
 /Users/nickrooney/Github/real-estate-assistant/src/main/java/api/OpenCageGeocoder.java
-/Users/nickrooney/Github/real-estate-assistant/src/main/java/model/Establishment.java
