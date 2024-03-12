@@ -45,7 +45,7 @@ public class SimpleServer {
 
     }
 
-    private static void handler(HttpExchange exchange) {
+    private static void handler(HttpExchange exchange) throws IOException {
         // Initializing jsonBuilder to be sent in response
         StringBuilder jsonBuilder = new StringBuilder("{");
 
@@ -67,7 +67,8 @@ public class SimpleServer {
                 jsonBuilder.append("\"received-address\": ").append("\"Error reading /fetch-address-data request body\"").append(",");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error reading request body: " + e.getMessage()); 
+            throw e;
         }
         
 
@@ -163,25 +164,38 @@ public class SimpleServer {
 
             // Define the handle method for incoming requests
             @Override
-            public void handle(HttpExchange exchange) throws IOException {
-                // Check if the request method is OPTIONS
-                if ("OPTIONS".equals(exchange.getRequestMethod())) {
-                    // Set the CORS headers for preflight requests
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
-                    exchange.sendResponseHeaders(204, -1);
-                } else if ("POST".equals(exchange.getRequestMethod())) {
-                    // Set the CORS headers for actual requests
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST");
-                    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
-
-                    handler(exchange);           
-
-                } else {
-                    // If the request method is not OPTIONS or POST, send a 405 Method Not Allowed response
-                    exchange.sendResponseHeaders(405, -1);
+            public void handle(HttpExchange exchange) {
+                try {
+                    // Check if the request method is OPTIONS or POST and call the handler accordingly
+                    if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                        // Set the CORS headers for preflight requests
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST");
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+                        exchange.sendResponseHeaders(204, -1);
+                    } else if ("POST".equals(exchange.getRequestMethod())) {
+                        // Set the CORS headers for actual requests
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST");
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+            
+                        handler(exchange); // This is where IOException may be thrown
+                    } else {
+                        // If the request method is not OPTIONS or POST, send a 405 Method Not Allowed response
+                        exchange.sendResponseHeaders(405, -1);
+                    }
+                } catch (IOException e) {
+                    // Log the error
+                    e.printStackTrace(); 
+                    // Respond with an HTTP error code
+                    try {
+                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
+                        // Close the exchange to complete the response
+                        exchange.getResponseBody().close();
+                    } catch (IOException ioException) {
+                        // Handle the case where the exchange cannot be closed
+                        ioException.printStackTrace();
+                    }
                 }
             }
         });
