@@ -70,6 +70,16 @@ import java.util.Arrays;
 
     // Methods
 
+    // Executes the complete workflow for processing overpass data.
+    public void executeWorkflow() {
+        postRequest();
+        readPostResponse();
+        sortByDistance();
+        extractClosestEstablishments();
+        convertToJson();
+    }
+
+
     // This method sends a post request.
     public void postRequest() {
         

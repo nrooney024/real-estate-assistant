@@ -95,52 +95,29 @@ public class SimpleServer {
             
             // Asking OverPass for closest supermarkets
             OverPass myOverPassCallSupermarkets = new OverPass(exchange,jsonBuilder,"shop","supermarket",latitude,longitude);
-            myOverPassCallSupermarkets.postRequest();
-            myOverPassCallSupermarkets.readPostResponse();
-            myOverPassCallSupermarkets.sortByDistance();
-            myOverPassCallSupermarkets.extractClosestEstablishments();
-            myOverPassCallSupermarkets.convertToJson();
+            myOverPassCallSupermarkets.executeWorkflow();
 
             // Asking OverPass for closest gyms
             OverPass myOverPassCallGyms = new OverPass(exchange,jsonBuilder,"leisure","fitness_centre",latitude,longitude);
-            myOverPassCallGyms.postRequest();
-            myOverPassCallGyms.readPostResponse();
-            myOverPassCallGyms.sortByDistance();
-            myOverPassCallGyms.extractClosestEstablishments();
-            myOverPassCallGyms.convertToJson();
+            myOverPassCallGyms.executeWorkflow();
             
             // Asking OverPass for closest cafes
             OverPass myOverPassCallCafes = new OverPass(exchange,jsonBuilder,"amenity","cafe",latitude,longitude);
-            myOverPassCallCafes.postRequest();
-            myOverPassCallCafes.readPostResponse();
-            myOverPassCallCafes.sortByDistance();
-            myOverPassCallCafes.extractClosestEstablishments();
-            myOverPassCallCafes.convertToJson();
+            myOverPassCallCafes.executeWorkflow();
 
             // Asking OverPass for closest schools
             OverPass myOverPassCallSchools = new OverPass(exchange,jsonBuilder,"amenity","school",latitude,longitude);
-            myOverPassCallSchools.postRequest();
-            myOverPassCallSchools.readPostResponse();
-            myOverPassCallSchools.sortByDistance();
-            myOverPassCallSchools.extractClosestEstablishments();
-            myOverPassCallSchools.convertToJson();
+            myOverPassCallSchools.executeWorkflow();
 
             // Asking OverPass for closest parks
             OverPass myOverPassCallParks = new OverPass(exchange,jsonBuilder,"leisure","park",latitude,longitude);
-            myOverPassCallParks.postRequest();
-            myOverPassCallParks.readPostResponse();
-            myOverPassCallParks.sortByDistance();
-            myOverPassCallParks.extractClosestEstablishments();
-            myOverPassCallParks.convertToJson();
+            myOverPassCallParks.executeWorkflow();
 
             // Asking OverPass for closest banks
             OverPass myOverPassCallBanks = new OverPass(exchange,jsonBuilder,"amenity","bank",latitude,longitude);
-            myOverPassCallBanks.postRequest();
-            myOverPassCallBanks.readPostResponse();
-            myOverPassCallBanks.sortByDistance();
-            myOverPassCallBanks.extractClosestEstablishments();
-            myOverPassCallBanks.convertToJson();
+            myOverPassCallBanks.executeWorkflow();
             myOverPassCallBanks.response();
+
 
         }else {
             // Handle the case where coordinates couldn't be fetched
