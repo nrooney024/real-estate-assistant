@@ -281,40 +281,5 @@ import java.util.Arrays;
 
     }
 
-    // This method sends a response to the /FETCH-ADDRESS-DATA GET request
-    public void response() {
-        System.out.println("\nresponse starting...");
-        // Finalizing JSON repsonse
-        if (jsonBuilder.toString().endsWith(",")) {
-            jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
-        } 
-        jsonBuilder.append("}");
-        String jsonString = jsonBuilder.toString();
-
-        System.out.println("\n\njsonString: " + jsonString);
-
-        // Create response headers
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        
-        // Send response headers
-        try{
-            byte[] responseBytes = jsonString.getBytes(StandardCharsets.UTF_8);
-            exchange.sendResponseHeaders(200, responseBytes.length);
-            System.out.println("\nSent successful response headers");
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        // Send response through output stream
-        OutputStream os = exchange.getResponseBody();
-        
-        try{
-            os.write(jsonString.getBytes());
-            os.close();
-            System.out.println("\nSent jsonString as response...");
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
 
 }

@@ -1,6 +1,6 @@
 package src.main.java;
 
-import src.main.java.util.RequestParser;
+import src.main.java.util.RequestHandler;
 import src.main.java.util.AddressExtractor;
 import src.main.java.util.HaversineCalculator;
 import src.main.java.api.OverPass;
@@ -10,8 +10,12 @@ import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import org.json.*; 
-import java.util.Arrays; 
+import org.json.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.management.openmbean.TabularType; 
 
 
 
@@ -49,13 +53,12 @@ public class SimpleServer {
         // Initializing jsonBuilder to be sent in response
         StringBuilder jsonBuilder = new StringBuilder("{");
 
-
         // Extracting address from GET request
 
         // Initializing encodedString
         String encodedString = "";
         try {
-            String body = RequestParser.parseBody(exchange.getRequestBody());
+            String body = RequestHandler.parseBody(exchange.getRequestBody());
             System.out.println("\nReceived: " + body);
     
             if (!body.isEmpty()) {
@@ -92,32 +95,28 @@ public class SimpleServer {
             double latitude = coordinates[0];
             double longitude = coordinates[1];
             geocoder.appendCoordinatesToJson(latitude, longitude, jsonBuilder);
+
+            // Listing out OverPass requests by searchTermType and searchTerm pairings
+            String[][] placeTypes = {
+                {"shop", "supermarket"},
+                {"leisure", "fitness_centre"},
+                {"amenity", "cafe"},
+                {"amenity", "school"},
+                {"leisure", "park"},
+                {"amenity", "bank"}
+            };
             
-            // Asking OverPass for closest supermarkets
-            OverPass myOverPassCallSupermarkets = new OverPass(exchange,jsonBuilder,"shop","supermarket",latitude,longitude);
-            myOverPassCallSupermarkets.executeWorkflow();
-
-            // Asking OverPass for closest gyms
-            OverPass myOverPassCallGyms = new OverPass(exchange,jsonBuilder,"leisure","fitness_centre",latitude,longitude);
-            myOverPassCallGyms.executeWorkflow();
+            // Loop over each searchTermType and searchTerm, and create an OverPass call
+            for (String[] placeType : placeTypes) {
+                String category = placeType[0];
+                String type = placeType[1];
+                // Create and execute OverPass call for the current place type
+                OverPass overPassCall = new OverPass(exchange, jsonBuilder, category, type, latitude, longitude);
+                overPassCall.executeWorkflow();
+            }
             
-            // Asking OverPass for closest cafes
-            OverPass myOverPassCallCafes = new OverPass(exchange,jsonBuilder,"amenity","cafe",latitude,longitude);
-            myOverPassCallCafes.executeWorkflow();
-
-            // Asking OverPass for closest schools
-            OverPass myOverPassCallSchools = new OverPass(exchange,jsonBuilder,"amenity","school",latitude,longitude);
-            myOverPassCallSchools.executeWorkflow();
-
-            // Asking OverPass for closest parks
-            OverPass myOverPassCallParks = new OverPass(exchange,jsonBuilder,"leisure","park",latitude,longitude);
-            myOverPassCallParks.executeWorkflow();
-
-            // Asking OverPass for closest banks
-            OverPass myOverPassCallBanks = new OverPass(exchange,jsonBuilder,"amenity","bank",latitude,longitude);
-            myOverPassCallBanks.executeWorkflow();
-            myOverPassCallBanks.response();
-
+            // Send response
+            response(exchange, jsonBuilder);
 
         }else {
             // Handle the case where coordinates couldn't be fetched
@@ -126,6 +125,41 @@ public class SimpleServer {
 
     };
 
+    // This method sends a response to the /FETCH-ADDRESS-DATA GET request
+    public static void response(HttpExchange exchange, StringBuilder jsonBuilder) {
+        System.out.println("\nresponse starting...");
+        // Finalizing JSON repsonse
+        if (jsonBuilder.toString().endsWith(",")) {
+            jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
+        } 
+        jsonBuilder.append("}");
+        String jsonString = jsonBuilder.toString();
+
+        System.out.println("\n\njsonString: " + jsonString);
+
+        // Create response headers
+        exchange.getResponseHeaders().add("Content-Type", "application/json");
+        
+        // Send response headers
+        try{
+            byte[] responseBytes = jsonString.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, responseBytes.length);
+            System.out.println("\nSent successful response headers");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        // Send response through output stream
+        OutputStream os = exchange.getResponseBody();
+        
+        try{
+            os.write(jsonString.getBytes());
+            os.close();
+            System.out.println("\nSent jsonString as response...");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
 
     public static void serverMain(String[] args) throws IOException {
