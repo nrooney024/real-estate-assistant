@@ -163,8 +163,15 @@ public class SimpleServer {
 
 
     public static void serverMain(String[] args) throws IOException {
-        // Define the port number
-        int port = 8080;
+        // Attempt to retrieve the port number from the PORT environment variable
+        // Default to 8080 if the PORT variable is not set or cannot be parsed
+        int port;
+        try {
+            String portStr = System.getenv("PORT");
+            port = portStr != null ? Integer.parseInt(portStr) : 8080;
+        } catch (NumberFormatException e) {
+            port = 8080; // Fallback port if there's an issue parsing the PORT environment variable
+        }
         // Create a new HTTP server on the specified port
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         // Print a message to the console indicating the server has started
