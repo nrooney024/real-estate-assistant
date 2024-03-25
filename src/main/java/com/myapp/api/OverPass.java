@@ -1,6 +1,6 @@
-package src.main.java.api;
+package com.myapp.api;
 
-import src.main.java.util.HaversineCalculator; 
+import com.myapp.util.HaversineCalculator; 
 import com.sun.net.httpserver.HttpExchange;
 import java.io.BufferedReader;
 import java.io.IOException;

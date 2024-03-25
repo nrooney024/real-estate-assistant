@@ -1,8 +1,8 @@
-src/main/java/util/HaversineCalculator.class
-src/main/java/SimpleServer.class
-src/main/java/SimpleServer$1.class
-src/main/java/api/OverPass$Establishment.class
-src/main/java/api/OverPass.class
-src/main/java/util/AddressExtractor.class
-src/main/java/util/RequestHandler.class
-src/main/java/api/OpenCageGeocoder.class
+com/myapp/api/OverPass$Establishment.class
+com/myapp/api/OverPass.class
+com/myapp/SimpleServer.class
+com/myapp/SimpleServer$1.class
+com/myapp/util/AddressExtractor.class
+com/myapp/util/RequestHandler.class
+com/myapp/util/HaversineCalculator.class
+com/myapp/api/OpenCageGeocoder.class
