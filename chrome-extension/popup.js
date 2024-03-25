@@ -83,7 +83,7 @@ function fetchEstablishments(address) {
   
   console.log("fetchSupermarkets called...")
   
-  fetch('http://localhost:8080/fetch-address-data', {
+  fetch('https://real-estate-assistant-7c6723789c55.herokuapp.com/fetch-address-data', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
