@@ -1,4 +1,4 @@
-package src.main.java.util;
+package com.myapp.util;
 
 // This class calculates the distance between two sets of coordinates
 public class HaversineCalculator {

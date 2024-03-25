@@ -1,10 +1,10 @@
-package src.main.java;
+package com.myapp;
 
-import src.main.java.util.RequestHandler;
-import src.main.java.util.AddressExtractor;
-import src.main.java.util.HaversineCalculator;
-import src.main.java.api.OverPass;
-import src.main.java.api.OpenCageGeocoder;
+import com.myapp.util.RequestHandler;
+import com.myapp.util.AddressExtractor;
+import com.myapp.util.HaversineCalculator;
+import com.myapp.api.OverPass;
+import com.myapp.api.OpenCageGeocoder;
 
 import com.sun.net.httpserver.*;
 import java.io.*;
