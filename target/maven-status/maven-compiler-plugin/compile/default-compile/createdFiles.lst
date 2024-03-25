@@ -1,8 +1,0 @@
-com/myapp/api/OverPass$Establishment.class
-com/myapp/api/OverPass.class
-com/myapp/SimpleServer.class
-com/myapp/SimpleServer$1.class
-com/myapp/util/AddressExtractor.class
-com/myapp/util/RequestHandler.class
-com/myapp/util/HaversineCalculator.class
-com/myapp/api/OpenCageGeocoder.class
