@@ -7,6 +7,6 @@
     "default_popup": "hello.html",
     "default_icon": "real-estate-assistant-logo.png"
   },
-  "permissions": ["activeTab", "scripting", "storage", "webNavigation"],
+  "permissions": ["storage"],
   "host_permissions": ["https://real-estate-assistant-7c6723789c55.herokuapp.com"]
 }
