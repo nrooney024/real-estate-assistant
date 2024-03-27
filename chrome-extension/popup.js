@@ -52,6 +52,9 @@ function displayEstablishmentsHandler(fetchEstablishmentsResponse, headerName, r
 
     // Adding section header to display div
     var displayDiv = document.getElementById("display");
+    if (displayDiv.innerHTML == "Loading..."){
+        displayDiv.innerHTML = "" 
+    }
     displayDiv.appendChild(sectionHeader);
 
 
@@ -123,4 +126,5 @@ function fetchEstablishments(address) {
     .catch(error => {
         console.error('Error fetching establishments data:', error);
     });
+
 }
