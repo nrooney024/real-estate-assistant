@@ -1,3 +1,15 @@
+document.addEventListener('DOMContentLoaded', function() {
+    chrome.storage.local.get(['fetchEstablishmentsResponse'], function(result) {
+        if (result.fetchEstablishmentsResponse) {
+            console.log('Data found in local storage. Displaying that data.');
+            displayEstablishments(result.fetchEstablishmentsResponse);
+        } else {
+            console.log("No data found in local storage.");
+            // Optionally, prompt the user to enter an address or perform other initial actions.
+        }
+    });
+});
+
 document.getElementById('searchForm').addEventListener('submit', function(event) {
   console.log("Form submitted...")
   event.preventDefault(); // Prevent the form from submitting normally
@@ -78,31 +90,37 @@ function displayEstablishmentsHandler(fetchEstablishmentsResponse, headerName, r
 
 
 function fetchEstablishments(address) {
-  // Use `fetch` to send the address to your API and get the list of supermarkets
-  // Then, store it using chrome.storage or send it directly to your popup
+    // Clear existing content
+    const addressDiv = document.getElementById('address')
+    addressDiv.innerHTML = ""
+    const displayDiv = document.getElementById("display");
+    displayDiv.innerHTML = 'Loading...';
   
-  console.log("fetchSupermarkets called...")
+    // Use `fetch` to send the address to your API and get the list of supermarkets
+    // Then, store it using chrome.storage or send it directly to your popup
   
-  fetch('https://real-estate-assistant-7c6723789c55.herokuapp.com/fetch-address-data', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ content: address })
-      })
-      .then(response => response.json())
-      .then(data => {
-          console.log(data)
-          console.log("Successfully received /fetch-address-data response!");
-          console.log("Data from /fetch-address-data: " + data);
-          
-      chrome.storage.local.set({ fetchEstablishmentsResponse: data }, function() {
-          console.log('Supermarkets are saved in chrome.storage.local');
-      });
-      
-      displayEstablishments(data)
-  })
-  .catch(error => {
-      console.error('Error fetching establishments data:', error);
-  });
+    console.log("fetchSupermarkets called...")
+  
+    fetch('https://real-estate-assistant-7c6723789c55.herokuapp.com/fetch-address-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: address })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            console.log("Successfully received /fetch-address-data response!");
+            console.log("Data from /fetch-address-data: " + data);
+            
+        chrome.storage.local.set({ fetchEstablishmentsResponse: data }, function() {
+            console.log('Supermarkets are saved in chrome.storage.local');
+        });
+        
+        displayEstablishments(data)
+    })
+    .catch(error => {
+        console.error('Error fetching establishments data:', error);
+    });
 }
