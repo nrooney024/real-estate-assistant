@@ -1,26 +1,114 @@
 body {
-    background: linear-gradient(to bottom, #000080, #0000FF);
-    color: white;
-    padding: 2em;
+    background: #F5F5F5;
+    color: #39481f;
+    padding: 3em;
+    font-family: "Inconsolata", monospace;;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
 }
 
-a {
-    color: white;
-}
-
-a:hover {
-    color: lightblue;
-}
-
-ol {
-    padding-inline-start: .5em;
-}
-
-li {
-    font-family: 'Source Code Pro', monospace;
+.header-logo{
+    width: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
 }
 
 h1 {
-    font-family: 'Rubik Doodle Shadow', cursive;
+    font-family: "Abril Fatface", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #39481f;
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: -.5em;
+    position: relative;
+    z-index: 2; /* higher than the image's z-index */
 }
 
+h2 {    
+    font-family: "Raleway", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;  
+    padding-top: 1em;
+}
+
+
+div{
+    font-size: 1.25em;
+}
+
+div#address{
+    padding-top: 1em;
+    border-bottom: 1px solid #39481f;
+    padding-bottom: 1em;
+}
+
+div#display{
+    padding-top: 1em;
+}
+
+a {
+    color: #39481f;
+}
+
+a:hover {
+    color: #3C4142;
+}
+
+ol {
+    padding-left: 1em;
+}
+
+li {
+    font-size: 1.25em;
+    padding-top: .25em;
+}
+
+
+
+/* Search Bar */
+
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ddd; /* Light grey border */
+    border-radius: 25px; /* Rounded corners */
+    overflow: hidden; /* Ensures the children (input and button) conform to the container's rounded corners */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 10px 20px;
+    border: none; /* Remove the default border */
+    outline: none; /* Remove the outline on focus */
+    font-size: 16px; /* Slightly larger font size */
+    border-radius: 25px 0 0 25px; /* Rounded corners on the left side */
+    transition: background-color 0.3s; /* Smooth background color transition on focus */
+  }
+  
+  .search-input:focus {
+    background-color: #f0f0f0; /* Light grey background on focus */
+  }
+  
+  .search-button {
+    padding: 10px 20px;
+    border: none; /* Remove the default border */
+    background-color: #39481f; /* Blue background */
+    color: #F5F5F5; /* White text */
+    font-size: 16px; /* Slightly larger font size */
+    cursor: pointer; /* Change mouse cursor on hover */
+    border-radius: 0 25px 25px 0; /* Rounded corners on the right side */
+    transition: background-color 0.3s; /* Smooth background color transition on hover */
+  }
+  
+  .search-button:hover {
+    background-color: #3C4142; /* Darker blue on hover */
+  }
+  
