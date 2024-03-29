@@ -5,7 +5,7 @@
   "version": "1.0",
   "action": {
     "default_popup": "hello.html",
-    "default_icon": "real-estate-assistant-logo.png"
+    "default_icon": "chrome-button-logo.png"
   },
   "permissions": ["storage"],
   "host_permissions": ["https://real-estate-assistant-7c6723789c55.herokuapp.com"]
