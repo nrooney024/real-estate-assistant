@@ -18,23 +18,18 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
 });
   
 function displayEstablishments(fetchEstablishmentsResponse){
-    // Supermarkets
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Supermarkets", "closest-supermarket")
-
-    // Gyms
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Gyms", "closest-fitness_centre")
-
-    // Cafes
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Coffee Shops", "closest-cafe")
-
-    // Schools
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Schools", "closest-school")
-
-    // Parks
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Parks", "closest-park")
-
-    // Banks
-    displayEstablishmentsHandler(fetchEstablishmentsResponse, "Banks", "closest-bank")
+    const establishments = [
+        ["Supermarkets", "closest-supermarket"],
+        ["Gyms", "closest-fitness_centre"],
+        ["Coffee Shops", "closest-cafe"],
+        ["Schools", "closest-school"],
+        ["Parks", "closest-park"],
+        ["Banks", "closest-bank"]
+      ];
+      
+      establishments.forEach(([searchTermType, searchTerm]) => {
+        displayEstablishmentsHandler(fetchEstablishmentsResponse, searchTermType, searchTerm);
+      });      
 }
   
 function displayEstablishmentsHandler(fetchEstablishmentsResponse, headerName, responseNode) {
