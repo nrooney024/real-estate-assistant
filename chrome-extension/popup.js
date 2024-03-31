@@ -70,16 +70,23 @@ function displayEstablishmentsHandler(fetchEstablishmentsResponse, headerName, r
         const name = establishment.name;
         const lat = establishment.lat;
         const lon = establishment.lon;
+        const distance = establishment.distance;
+        const formattedDistance = distance.toFixed(2);
         const url = `https://www.google.com/maps/?q=${lat},${lon}`;
 
         // Create and append the list item
         const listItem = document.createElement('li');
         const link = document.createElement('a');
         link.href = url;
-        link.textContent = name;
+        link.textContent = name; // Only the name is part of the link
         link.target = "_blank"; // Opens in a new tab
 
         listItem.appendChild(link);
+
+        // Append the distance text outside of the link
+        const distanceText = document.createTextNode(` (${formattedDistance} mi)`);
+        listItem.appendChild(distanceText);
+
         list.appendChild(listItem);
     });
 

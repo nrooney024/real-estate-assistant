@@ -264,7 +264,7 @@ import java.util.Arrays;
                 // Add longitude
                 establishmentJSON.put("lon", establishment.lon); 
                 // Add distance
-                establishmentJSON.put("distance-km", establishment.distance); 
+                establishmentJSON.put("distance", establishment.distance); 
                 // Add the supermarket JSONObject to the JSONArray
                 closestEstablishmentsJSON.put(establishmentJSON); 
             }
