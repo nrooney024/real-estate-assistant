@@ -5,17 +5,15 @@
 <p align="center">
   <img src="https://github.com/nrooney024/real-estate-assistant/blob/main/chrome-extension/chrome-button-logo.png?raw=true" alt="Real Estate Assistant" title="Real Estate Assistant" width="250"/>
 </p>
+<br>
+A Chrome Extension designed to provide users with valuable information about amenities near any given address. With a simple interface, users can quickly discover nearby supermarkets, gyms, coffee shops, schools, parks, and banks, making it easier to learn about the area surrounding a particular address. 
 
-A Chrome Extension designed to provide users with valuable information about amenities near any given address. With a simple interface, users can quickly discover nearby supermarkets, gyms, coffee shops, schools, parks, and banks, making it easier to learn about the area surrounding a particular address. [Click here to download the Chrome Extension!](https://chromewebstore.google.com/detail/real-estate-assistant/ikbmgehhghnkohaoehjlmfniegppchnd)
+<br>
+<br>
 
+[Click here to download the Chrome Extension!](https://chromewebstore.google.com/detail/real-estate-assistant/ikbmgehhghnkohaoehjlmfniegppchnd)
 
-<p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#download">Download</a> •
-  <a href="#credits">Credits</a>
-</p>
-
+<br>
 <p align="center">
   <img src="https://github.com/nrooney024/real-estate-assistant/blob/main/chrome-extension/real-estate-sssistant-recording.gif?raw=true" alt="Screen recording" width="250"/>
 </p>
